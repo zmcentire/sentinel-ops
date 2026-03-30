@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  timescaledb:
+  image: timescale/timescaledb:latest-pg16
+  environment:
+    POSTGRES_USER: sentinel
+    POSTGRES_PASSWORD:  sentinel_secret
+    POSTGRES_DB: sentinelops
+  ports:
+    - "5432:5432"
+  volumes:
+    - tsdb_data:/var/lib/postgresql/data 
+    - ./packages/db/migrations:/docker-entrypoint-initdb.d # auto-runs on first start
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  tsdb_data

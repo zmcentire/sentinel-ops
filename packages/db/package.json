@@ -1,0 +1,12 @@
+{
+  "name": "@sentinel/db",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "pg": "^8.11.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "@types/node": "^20.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+    "name": "sentinel-ops",
+    "private": true,
+    "workspaces": ["packages/*"],
+    "scripts": {
+        "dev": "concurrently \"npm run dev -w api\" \"npm run dev -w workers\" \"npm run dev -w frontend\"",
+        "migrate": "node packages/db/migrate.js"
+    },
+    "devDependencies": {
+        "concurrently": "^8.0.0",
+        "typescript": "^5.4.0"
+    }
+}
