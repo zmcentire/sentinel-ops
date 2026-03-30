@@ -9,7 +9,7 @@
     "declaration":       true,
     "sourceMap":         true,
     "resolveJsonModule": true,
-    "outDir":            "dist",
+    "outDir":            "./dist",
     "rootDir":           ".."
   },
   "include": ["src/**/*", "../db/index.ts"],

@@ -2,8 +2,8 @@
     "name": "@sentinel/workers",
     "version": "1.0.0",
     "scripts": {
-        "dev": "ts-node-dev --respawn src/scheduler.ts",
-        "build": "tsc",
+        "dev":   "ts-node-dev --respawn -r tsconfig-paths/register src/scheduler.ts",
+        "build": "tsc --project tsconfig.json",
         "start": "node dist/scheduler.js"
     },
     "dependencies": {
