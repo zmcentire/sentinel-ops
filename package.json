@@ -3,7 +3,9 @@
     "private": true,
     "workspaces": ["packages/*"],
     "scripts": {
-        "dev": "concurrently \"npm run dev -w api\" \"npm run dev -w workers\" \"npm run dev -w frontend\"",
+        "dev": "concurrently \"npm run dev -w @sentinel/api\" \"npm run dev -w @sentinel/workers\" \"npm run dev -w @sentinel/frontend\"",
+        "build:api":     "npm run build -w @sentinel/api",
+        "build:workers": "npm run build -w @sentinel/workers",
         "migrate": "node packages/db/migrate.js"
     },
     "devDependencies": {
