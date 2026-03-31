@@ -1,4 +1,5 @@
 import useSWR from 'swr';
+import { API_BASE } from '../config';
 
 export interface Endpoint {
   id:                string;
@@ -13,8 +14,7 @@ export interface Endpoint {
   last_checked_at:   string | null;
 }
 
-const BASE = import.meta.env.VITE_API_URL ?? '';
-const fetcher = (url: string) => fetch(`${BASE}${url}`).then(r => r.json());
+const fetcher = (url: string) => fetch(`${API_BASE}${url}`).then(r => r.json());
 
 export function useEndpoints() {
   const { data, error, isLoading, mutate } = useSWR<Endpoint[]>(

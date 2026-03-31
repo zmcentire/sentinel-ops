@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { WS_BASE } from '../config';
 
 export interface LogEntry {
   type:       string;
@@ -22,7 +23,7 @@ export function useLiveLog(maxEntries = 120) {
       const wsUrl  = apiUrl
         .replace('https://', 'wss://')
         .replace('http://',  'ws://');
-       const ws = new WebSocket(`${wsUrl}/ws/live`);
+       const ws = new WebSocket(`${WS_BASE}/ws/live`);
        wsRef.current = ws;
 
       ws.onmessage = (e: MessageEvent) => {

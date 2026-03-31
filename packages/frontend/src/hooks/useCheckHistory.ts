@@ -1,4 +1,5 @@
 import useSWR from 'swr';
+import { API_BASE } from '../config';
 
 export interface HistoryRow {
   bucket:       string;
@@ -12,8 +13,7 @@ export interface HistoryRow {
   max_latency:  number;
 }
 
-const BASE = import.meta.env.VITE_API_URL ?? '';
-const fetcher = (url: string) => fetch(`${BASE}${url}`).then(r => r.json());
+const fetcher = (url: string) => fetch(`${API_BASE}${url}`).then(r => r.json());
 
 export function useCheckHistory(endpointId: string | null, windowMin = 60) {
   const { data, isLoading } = useSWR<HistoryRow[]>(

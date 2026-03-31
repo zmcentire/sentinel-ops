@@ -1,4 +1,5 @@
 import useSWR from 'swr';
+import { API_BASE } from '../config';
 
 export interface IncidentStats {
   open_count:      number;
@@ -8,8 +9,7 @@ export interface IncidentStats {
   avg_mttr_p1_min: number | null;
 }
 
-const BASE = import.meta.env.VITE_API_URL ?? '';
-const fetcher = (url: string) => fetch(`${BASE}${url}`).then(r => r.json());
+const fetcher = (url: string) => fetch(`${API_BASE}${url}`).then(r => r.json());
 
 export function useIncidentStats() {
   const { data, isLoading } = useSWR<IncidentStats>(
