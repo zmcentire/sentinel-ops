@@ -9,8 +9,11 @@ interface Props { endpointId: string; windowMin?: number; }
 export function LatencyChart({ endpointId, windowMin = 60 }: Props) {
   const { history, isLoading } = useCheckHistory(endpointId, windowMin);
 
+  // Guard against non-array responses
   if (isLoading) return <div className="no-selection" style={{ flex: 1 }}>Loading...</div>;
-  if (!history.length) return <div className="no-selection" style={{ flex: 1 }}>No data yet — waiting for first checks</div>;
+  if (!Array.isArray(history) || !history.length) {
+    return <div className="no-selection" style={{ flex: 1 }}>No data yet — checks running every 30s</div>;
+  }
 
   const data = history.map(row => ({
     label:   row.bucket.slice(11, 16),

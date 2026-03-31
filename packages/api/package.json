@@ -2,10 +2,10 @@
   "name": "@sentinel/api",
   "version": "1.0.0",
   "scripts": {
-    "dev":   "ts-node-dev --respawn src/index.ts",
+    "dev": "ts-node-dev --respawn src/index.ts",
     "build": "swc src -d dist",
     "start": "node dist/src/index.js"
-   },
+  },
   "dependencies": {
     "@sentinel/db": "*",
     "cors": "^2.8.5",

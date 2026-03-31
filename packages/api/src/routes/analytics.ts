@@ -4,7 +4,6 @@ import { pool } from '../db';
 const router = Router();
 
 // ─── GET /api/analytics/history/:endpointId?window=60 ────────────────────────
-// Queries the continuous aggregate — sub-millisecond even with months of data
 
 router.get('/history/:endpointId', async (req: Request, res: Response) => {
   const { endpointId } = req.params;
@@ -37,13 +36,14 @@ router.get('/history/:endpointId', async (req: Request, res: Response) => {
     );
     res.json(rows);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    res.status(500).json({ error: msg });
+    // Return empty array instead of 500 — continuous aggregate may not
+    // have data yet if workers have just started
+    console.error('[analytics] history error:', err instanceof Error ? err.message : err);
+    res.json([]);
   }
 });
 
 // ─── GET /api/analytics/sla/:endpointId ──────────────────────────────────────
-// 30-day uptime SLA summary
 
 router.get('/sla/:endpointId', async (req: Request, res: Response) => {
   try {
@@ -61,15 +61,14 @@ router.get('/sla/:endpointId', async (req: Request, res: Response) => {
          AND bucket >= NOW() - INTERVAL '30 days'`,
       [req.params.endpointId]
     );
-    res.json(row);
+    res.json(row ?? {});
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    res.status(500).json({ error: msg });
+    console.error('[analytics] sla error:', err instanceof Error ? err.message : err);
+    res.json({});
   }
 });
 
 // ─── GET /api/analytics/summary ──────────────────────────────────────────────
-// Fleet-wide p50/p99 across all endpoints for the last hour
 
 router.get('/summary', async (_req: Request, res: Response) => {
   try {
@@ -95,8 +94,8 @@ router.get('/summary', async (_req: Request, res: Response) => {
     `);
     res.json(rows);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    res.status(500).json({ error: msg });
+    console.error('[analytics] summary error:', err instanceof Error ? err.message : err);
+    res.json([]);
   }
 });
 

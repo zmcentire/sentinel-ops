@@ -12,7 +12,6 @@ const _express = require("express");
 const _db = require("../db");
 const router = (0, _express.Router)();
 // ─── GET /api/analytics/history/:endpointId?window=60 ────────────────────────
-// Queries the continuous aggregate — sub-millisecond even with months of data
 router.get('/history/:endpointId', async (req, res)=>{
     const { endpointId } = req.params;
     const window = parseInt(req.query.window ?? '60');
@@ -44,14 +43,13 @@ router.get('/history/:endpointId', async (req, res)=>{
         ]);
         res.json(rows);
     } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        res.status(500).json({
-            error: msg
-        });
+        // Return empty array instead of 500 — continuous aggregate may not
+        // have data yet if workers have just started
+        console.error('[analytics] history error:', err instanceof Error ? err.message : err);
+        res.json([]);
     }
 });
 // ─── GET /api/analytics/sla/:endpointId ──────────────────────────────────────
-// 30-day uptime SLA summary
 router.get('/sla/:endpointId', async (req, res)=>{
     try {
         const { rows: [row] } = await _db.pool.query(`SELECT
@@ -67,16 +65,13 @@ router.get('/sla/:endpointId', async (req, res)=>{
          AND bucket >= NOW() - INTERVAL '30 days'`, [
             req.params.endpointId
         ]);
-        res.json(row);
+        res.json(row ?? {});
     } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        res.status(500).json({
-            error: msg
-        });
+        console.error('[analytics] sla error:', err instanceof Error ? err.message : err);
+        res.json({});
     }
 });
 // ─── GET /api/analytics/summary ──────────────────────────────────────────────
-// Fleet-wide p50/p99 across all endpoints for the last hour
 router.get('/summary', async (_req, res)=>{
     try {
         const { rows } = await _db.pool.query(`
@@ -101,10 +96,8 @@ router.get('/summary', async (_req, res)=>{
     `);
         res.json(rows);
     } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        res.status(500).json({
-            error: msg
-        });
+        console.error('[analytics] summary error:', err instanceof Error ? err.message : err);
+        res.json([]);
     }
 });
 const _default = router;

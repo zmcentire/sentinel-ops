@@ -2,9 +2,8 @@
     "name": "@sentinel/workers",
     "version": "1.0.0",
     "scripts": {
-        "dev":   "ts-node-dev --respawn src/scheduler.ts",
+        "dev": "ts-node-dev --respawn src/scheduler.ts",
         "build": "swc src -d dist"
-        
     },
     "dependencies": {
         "@sendgrid/mail": "^8.0.0",
