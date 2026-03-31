@@ -23,10 +23,18 @@ _export(exports, {
     }
 });
 const _bullmq = require("bullmq");
-const redisConnection = {
-    host: process.env.REDIS_HOST ?? 'localhost',
-    port: parseInt(process.env.REDIS_PORT ?? '6379')
-};
+const _url = require("url");
+function getRedisConnection() {
+    const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
+    const parsed = new _url.URL(redisUrl);
+    return {
+        host: parsed.hostname,
+        port: parseInt(parsed.port ?? '6379'),
+        password: parsed.password || undefined,
+        username: parsed.username || undefined
+    };
+}
+const redisConnection = getRedisConnection();
 const checksQueue = new _bullmq.Queue('checks', {
     connection: redisConnection,
     defaultJobOptions: {

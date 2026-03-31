@@ -1,9 +1,18 @@
 import { Queue } from 'bullmq';
+import { URL } from 'url';
 
-export const redisConnection = {
-  host: process.env.REDIS_HOST ?? 'localhost',
-  port: parseInt(process.env.REDIS_PORT ?? '6379'),
-};
+function getRedisConnection() {
+  const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
+  const parsed   = new URL(redisUrl);
+  return {
+    host:     parsed.hostname,
+    port:     parseInt(parsed.port ?? '6379'),
+    password: parsed.password || undefined,
+    username: parsed.username || undefined,
+  };
+}
+
+export const redisConnection = getRedisConnection();
 
 export const checksQueue = new Queue('checks', {
   connection: redisConnection,
