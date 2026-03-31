@@ -9,7 +9,7 @@ export interface IncidentStats {
   avg_mttr_p1_min: number | null;
 }
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const fetcher = (url: string) => fetch(`${API_BASE}${url}`).then(r => r.json());
 
 export function useIncidentStats() {
   const { data, isLoading } = useSWR<IncidentStats>(
