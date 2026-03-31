@@ -3,7 +3,7 @@ node_modules/
 .npm/
 
 # Build output
-dist/
+/dist/
 build/
 
 # Environment files — NEVER commit real secrets

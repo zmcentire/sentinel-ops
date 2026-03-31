@@ -2,9 +2,9 @@
     "name": "@sentinel/workers",
     "version": "1.0.0",
     "scripts": {
-        "dev":   "ts-node-dev --respawn -r tsconfig-paths/register src/scheduler.ts",
-        "build": "tsc --project tsconfig.json",
-        "start": "node dist/scheduler.js"
+        "dev":   "ts-node-dev --respawn src/scheduler.ts",
+        "build": "swc src -d dist",
+        "start": "node dist/src/scheduler.js"
     },
     "dependencies": {
         "@sendgrid/mail": "^8.0.0",
@@ -17,6 +17,8 @@
         "ws": "^8.16.0"
     },
     "devDependencies": {
+        "@swc/cli": "^0.8.0",
+        "@swc/core": "^1.15.21",
         "@types/node": "^20.19.37",
         "@types/node-cron": "^3.0.11",
         "@types/ws": "^8.0.0",
