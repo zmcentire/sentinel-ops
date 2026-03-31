@@ -14,7 +14,7 @@ export interface Endpoint {
   last_checked_at:   string | null;
 }
 
-const fetcher = (url: string) => fetch(`${API_BASE}${url}`).then(r => r.json());
+const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export function useEndpoints() {
   const { data, error, isLoading, mutate } = useSWR<Endpoint[]>(
