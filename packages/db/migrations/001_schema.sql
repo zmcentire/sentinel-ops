@@ -42,7 +42,7 @@ WITH (timescaledb.continuous) AS
 SELECT 
     time_bucket('1 minute', time)                               AS bucket,
     endpoint_id,
-    COUNT(*)                                                    AS totale_checks,
+    COUNT(*)                                                    AS total_checks,
     SUM(CASE WHEN success THEN 1 ELSE 0 END)                    AS successes,
     AVG(latency_ms)                                             AS avg_latency,
     PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY latency_ms)    AS p50,
