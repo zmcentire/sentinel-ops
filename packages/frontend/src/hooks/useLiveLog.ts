@@ -18,13 +18,12 @@ export function useLiveLog(maxEntries = 120) {
 
   useEffect(() => {
     function connect() {
-      const base  = (import.meta.env['VITE_API_URL'] as string) ?? '';
-      const wsUrl = base
+      const apiUrl = (import.meta.env['VITE_API_URL'] as string) ?? '';
+      const wsUrl  = apiUrl
         .replace('https://', 'wss://')
         .replace('http://',  'ws://');
-
-      const ws = new WebSocket(`${wsUrl}/ws/live`);
-      wsRef.current = ws;
+       const ws = new WebSocket(`${wsUrl}/ws/live`);
+       wsRef.current = ws;
 
       ws.onmessage = (e: MessageEvent) => {
         try {
