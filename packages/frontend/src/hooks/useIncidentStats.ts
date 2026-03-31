@@ -8,7 +8,8 @@ export interface IncidentStats {
   avg_mttr_p1_min: number | null;
 }
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const BASE = (import.meta.env['VITE_API_URL'] as string) ?? '';
+const fetcher = (url: string) => fetch(`${BASE}${url}`).then(r => r.json());
 
 export function useIncidentStats() {
   const { data, isLoading } = useSWR<IncidentStats>(

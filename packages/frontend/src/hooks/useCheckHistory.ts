@@ -12,7 +12,8 @@ export interface HistoryRow {
   max_latency:  number;
 }
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const BASE = (import.meta.env['VITE_API_URL'] as string) ?? '';
+const fetcher = (url: string) => fetch(`${BASE}${url}`).then(r => r.json());
 
 export function useCheckHistory(endpointId: string | null, windowMin = 60) {
   const { data, isLoading } = useSWR<HistoryRow[]>(

@@ -1,4 +1,4 @@
-import { useLiveLog } from '../hooks/useLiveLog';
+import { useLiveLog, LogEntry } from '../hooks/useLiveLog';
 
 export function LiveEventLog() {
   const log = useLiveLog(120);
@@ -16,7 +16,7 @@ export function LiveEventLog() {
             Waiting for events...
           </div>
         )}
-        {log.map((entry, i) => (
+        {log.map((entry: LogEntry, i: number) => (
           <div key={i} className="log-entry">
             <span className="log-ts">{entry.timestamp.slice(11, 19)}</span>
             <span className={`log-code ${entry.success ? 'log-ok' : 'log-err'}`}>

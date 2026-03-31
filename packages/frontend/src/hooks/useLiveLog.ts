@@ -12,21 +12,27 @@ export interface LogEntry {
 }
 
 export function useLiveLog(maxEntries = 120) {
-  const [log, setLog]   = useState<LogEntry[]>([]);
-  const wsRef           = useRef<WebSocket | null>(null);
-  const reconnectRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [log, setLog]        = useState<LogEntry[]>([]);
+  const wsRef                = useRef<WebSocket | null>(null);
+  const reconnectRef         = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     function connect() {
-      const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      const ws    = new WebSocket(`${proto}://${window.location.host}/ws/live`);
+      const base  = (import.meta.env['VITE_API_URL'] as string) ?? '';
+      const wsUrl = base
+        .replace('https://', 'wss://')
+        .replace('http://',  'ws://');
+
+      const ws = new WebSocket(`${wsUrl}/ws/live`);
       wsRef.current = ws;
 
-      ws.onmessage = (e) => {
+      ws.onmessage = (e: MessageEvent) => {
         try {
-          const entry: LogEntry = JSON.parse(e.data);
+          const entry = JSON.parse(e.data as string) as LogEntry;
           setLog(prev => [entry, ...prev].slice(0, maxEntries));
-        } catch {}
+        } catch {
+          // ignore malformed messages
+        }
       };
 
       ws.onclose = () => {

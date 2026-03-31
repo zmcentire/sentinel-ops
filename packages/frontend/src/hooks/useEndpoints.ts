@@ -13,7 +13,8 @@ export interface Endpoint {
   last_checked_at:   string | null;
 }
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const BASE = (import.meta.env['VITE_API_URL'] as string) ?? '';
+const fetcher = (url: string) => fetch(`${BASE}${url}`).then(r => r.json());
 
 export function useEndpoints() {
   const { data, error, isLoading, mutate } = useSWR<Endpoint[]>(
