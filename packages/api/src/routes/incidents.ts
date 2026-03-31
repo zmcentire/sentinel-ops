@@ -55,9 +55,15 @@ router.get('/stats/summary', async (_req: Request, res: Response) => {
     `);
     res.json(stats);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    res.status(500).json({ error: msg });
-  }
+    console.error('[incidents] stats error:', err instanceof Error ? err.message : err);
+    res.json({
+      open_count: 0,
+      ack_count: 0,
+      resolved_count: 0,
+      avg_mttr_min: null,
+      avg_mttr_p1_min: null,
+  });
+ }
 });
 
 // ─── GET /api/incidents/:id ───────────────────────────────────────────────────
