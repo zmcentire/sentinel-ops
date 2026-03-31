@@ -12,7 +12,7 @@ export interface HistoryRow {
   max_latency:  number;
 }
 
-const BASE = (import.meta.env['VITE_API_URL'] as string) ?? '';
+const BASE = import.meta.env.VITE_API_URL ?? '';
 const fetcher = (url: string) => fetch(`${BASE}${url}`).then(r => r.json());
 
 export function useCheckHistory(endpointId: string | null, windowMin = 60) {

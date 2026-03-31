@@ -18,7 +18,7 @@ export function useLiveLog(maxEntries = 120) {
 
   useEffect(() => {
     function connect() {
-      const apiUrl = (import.meta.env['VITE_API_URL'] as string) ?? '';
+      const apiUrl = import.meta.env.VITE_API_URL ?? '';
       const wsUrl  = apiUrl
         .replace('https://', 'wss://')
         .replace('http://',  'ws://');
