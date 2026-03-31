@@ -9,7 +9,7 @@ Object.defineProperty(exports, "default", {
     }
 });
 const _express = require("express");
-const _index = require("../../../db/index");
+const _db = require("../db");
 const router = (0, _express.Router)();
 // ─── GET /api/incidents ───────────────────────────────────────────────────────
 router.get('/', async (req, res)=>{
@@ -26,7 +26,7 @@ router.get('/', async (req, res)=>{
     }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
     try {
-        const { rows } = await _index.pool.query(`SELECT
+        const { rows } = await _db.pool.query(`SELECT
          i.*,
          e.name AS endpoint_name,
          e.url  AS endpoint_url
@@ -50,7 +50,7 @@ router.get('/', async (req, res)=>{
 // Must be defined BEFORE /:id or Express will match 'stats' as an id
 router.get('/stats/summary', async (_req, res)=>{
     try {
-        const { rows: [stats] } = await _index.pool.query(`
+        const { rows: [stats] } = await _db.pool.query(`
       SELECT
         COUNT(*) FILTER (WHERE status = 'open')                          AS open_count,
         COUNT(*) FILTER (WHERE status = 'acknowledged')                  AS ack_count,
@@ -73,7 +73,7 @@ router.get('/stats/summary', async (_req, res)=>{
 // ─── GET /api/incidents/:id ───────────────────────────────────────────────────
 router.get('/:id', async (req, res)=>{
     try {
-        const { rows: [incident] } = await _index.pool.query(`SELECT i.*, e.name AS endpoint_name, e.url AS endpoint_url
+        const { rows: [incident] } = await _db.pool.query(`SELECT i.*, e.name AS endpoint_name, e.url AS endpoint_url
        FROM incidents i
        LEFT JOIN endpoints e ON e.id = i.endpoint_id
        WHERE i.id = $1`, [
@@ -83,7 +83,7 @@ router.get('/:id', async (req, res)=>{
             error: 'Not found'
         });
         // Fetch raw check results spanning the incident window for postmortem chart
-        const { rows: timeline } = await _index.pool.query(`SELECT time, latency_ms, success, status_code, error_msg
+        const { rows: timeline } = await _db.pool.query(`SELECT time, latency_ms, success, status_code, error_msg
        FROM check_results
        WHERE endpoint_id = $1
          AND time BETWEEN $2 AND COALESCE($3, NOW())
@@ -106,7 +106,7 @@ router.get('/:id', async (req, res)=>{
 // ─── PATCH /api/incidents/:id/acknowledge ────────────────────────────────────
 router.patch('/:id/acknowledge', async (req, res)=>{
     try {
-        const { rows: [inc] } = await _index.pool.query(`UPDATE incidents
+        const { rows: [inc] } = await _db.pool.query(`UPDATE incidents
        SET status = 'acknowledged'
        WHERE id = $1 AND status = 'open'
        RETURNING *`, [
@@ -128,7 +128,7 @@ router.patch('/:id/acknowledge', async (req, res)=>{
 // ─── PATCH /api/incidents/:id/resolve ────────────────────────────────────────
 router.patch('/:id/resolve', async (req, res)=>{
     try {
-        const { rows: [inc] } = await _index.pool.query(`UPDATE incidents
+        const { rows: [inc] } = await _db.pool.query(`UPDATE incidents
        SET status = 'resolved', resolved_at = NOW()
        WHERE id = $1 AND status != 'resolved'
        RETURNING *`, [

@@ -9,13 +9,13 @@ Object.defineProperty(exports, "default", {
     }
 });
 const _express = require("express");
-const _index = require("../../../db/index");
+const _db = require("../db");
 const router = (0, _express.Router)();
 // ─── GET /api/endpoints ───────────────────────────────────────────────────────
 // All endpoints with their latest check result attached via LATERAL join
 router.get('/', async (_req, res)=>{
     try {
-        const { rows } = await _index.pool.query(`
+        const { rows } = await _db.pool.query(`
       SELECT
         e.*,
         cr.status_code,
@@ -44,7 +44,7 @@ router.get('/', async (_req, res)=>{
 // ─── GET /api/endpoints/:id ───────────────────────────────────────────────────
 router.get('/:id', async (req, res)=>{
     try {
-        const { rows: [endpoint] } = await _index.pool.query(`SELECT * FROM endpoints WHERE id = $1`, [
+        const { rows: [endpoint] } = await _db.pool.query(`SELECT * FROM endpoints WHERE id = $1`, [
             req.params.id
         ]);
         if (!endpoint) return res.status(404).json({
@@ -67,7 +67,7 @@ router.post('/', async (req, res)=>{
         });
     }
     try {
-        const { rows: [endpoint] } = await _index.pool.query(`INSERT INTO endpoints (name, url, method, headers, body, interval_s, timeout_ms)
+        const { rows: [endpoint] } = await _db.pool.query(`INSERT INTO endpoints (name, url, method, headers, body, interval_s, timeout_ms)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`, [
             name,
@@ -110,7 +110,7 @@ router.patch('/:id', async (req, res)=>{
         ...updates.map(([, v])=>v)
     ];
     try {
-        const { rows: [ep] } = await _index.pool.query(`UPDATE endpoints SET ${setClauses} WHERE id = $1 RETURNING *`, values);
+        const { rows: [ep] } = await _db.pool.query(`UPDATE endpoints SET ${setClauses} WHERE id = $1 RETURNING *`, values);
         if (!ep) return res.status(404).json({
             error: 'Not found'
         });
@@ -125,7 +125,7 @@ router.patch('/:id', async (req, res)=>{
 // ─── DELETE /api/endpoints/:id ────────────────────────────────────────────────
 router.delete('/:id', async (req, res)=>{
     try {
-        await _index.pool.query('DELETE FROM endpoints WHERE id = $1', [
+        await _db.pool.query('DELETE FROM endpoints WHERE id = $1', [
             req.params.id
         ]);
         res.status(204).send();
@@ -139,7 +139,7 @@ router.delete('/:id', async (req, res)=>{
 // ─── GET /api/endpoints/:id/uptime ───────────────────────────────────────────
 router.get('/:id/uptime', async (req, res)=>{
     try {
-        const { rows: [row] } = await _index.pool.query(`SELECT
+        const { rows: [row] } = await _db.pool.query(`SELECT
         ROUND(
           SUM(CASE WHEN time >= NOW() - INTERVAL '1 day'   AND success THEN 1 ELSE 0 END)::numeric
           / NULLIF(SUM(CASE WHEN time >= NOW() - INTERVAL '1 day'  THEN 1 ELSE 0 END), 0) * 100
@@ -167,7 +167,7 @@ router.get('/:id/uptime', async (req, res)=>{
 // ─── GET /api/endpoints/:id/rules ────────────────────────────────────────────
 router.get('/:id/rules', async (req, res)=>{
     try {
-        const { rows } = await _index.pool.query(`SELECT * FROM alert_rules WHERE endpoint_id = $1 ORDER BY metric`, [
+        const { rows } = await _db.pool.query(`SELECT * FROM alert_rules WHERE endpoint_id = $1 ORDER BY metric`, [
             req.params.id
         ]);
         res.json(rows);
@@ -182,7 +182,7 @@ router.get('/:id/rules', async (req, res)=>{
 router.post('/:id/rules', async (req, res)=>{
     const { metric, operator, threshold, window_min = 5, severity = 'p2', cooldown_min = 15, notify_sms = false, notify_email = true } = req.body;
     try {
-        const { rows: [rule] } = await _index.pool.query(`INSERT INTO alert_rules
+        const { rows: [rule] } = await _db.pool.query(`INSERT INTO alert_rules
          (endpoint_id, metric, operator, threshold, window_min,
           severity, cooldown_min, notify_sms, notify_email)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
@@ -208,7 +208,7 @@ router.post('/:id/rules', async (req, res)=>{
 // ─── DELETE /api/endpoints/:id/rules/:ruleId ─────────────────────────────────
 router.delete('/:id/rules/:ruleId', async (req, res)=>{
     try {
-        await _index.pool.query(`DELETE FROM alert_rules WHERE id = $1 AND endpoint_id = $2`, [
+        await _db.pool.query(`DELETE FROM alert_rules WHERE id = $1 AND endpoint_id = $2`, [
             req.params.ruleId,
             req.params.id
         ]);

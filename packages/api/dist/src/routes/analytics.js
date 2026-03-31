@@ -9,7 +9,7 @@ Object.defineProperty(exports, "default", {
     }
 });
 const _express = require("express");
-const _index = require("../../../db/index");
+const _db = require("../db");
 const router = (0, _express.Router)();
 // ─── GET /api/analytics/history/:endpointId?window=60 ────────────────────────
 // Queries the continuous aggregate — sub-millisecond even with months of data
@@ -22,7 +22,7 @@ router.get('/history/:endpointId', async (req, res)=>{
         });
     }
     try {
-        const { rows } = await _index.pool.query(`SELECT
+        const { rows } = await _db.pool.query(`SELECT
          bucket,
          avg_latency::numeric(10,1)  AS avg_latency,
          p50::numeric(10,1)          AS p50,
@@ -54,7 +54,7 @@ router.get('/history/:endpointId', async (req, res)=>{
 // 30-day uptime SLA summary
 router.get('/sla/:endpointId', async (req, res)=>{
     try {
-        const { rows: [row] } = await _index.pool.query(`SELECT
+        const { rows: [row] } = await _db.pool.query(`SELECT
          SUM(total_checks)                                                        AS total_checks,
          SUM(successes)                                                           AS successes,
          ROUND(
@@ -79,7 +79,7 @@ router.get('/sla/:endpointId', async (req, res)=>{
 // Fleet-wide p50/p99 across all endpoints for the last hour
 router.get('/summary', async (_req, res)=>{
     try {
-        const { rows } = await _index.pool.query(`
+        const { rows } = await _db.pool.query(`
       SELECT
         e.id,
         e.name,

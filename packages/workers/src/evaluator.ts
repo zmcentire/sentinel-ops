@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { Worker } from 'bullmq';
-import { pool } from '../../db/index';
+import { pool } from './db';
 import { redisConnection, notificationsQueue } from './queues';
 
 interface EvalJobData {

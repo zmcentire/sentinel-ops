@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { Worker, Job } from 'bullmq';
 import axios from 'axios';
-import { pool } from '../../db/index';
+import { pool } from './db';
 import { redisConnection, evaluationsQueue } from './queues';
 
 const broadcast = (_payload: object): void => {};
