@@ -6,7 +6,7 @@ import { initWss } from './ws';
 import endpointsRouter from './routes/endpoints';
 import incidentsRouter from './routes/incidents';
 import analyticsRouter from './routes/analytics';
-import { pool } from '../../db/index';
+import { pool } from './db';
 
 const app    = express();
 const server = http.createServer(app);

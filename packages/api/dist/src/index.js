@@ -10,7 +10,7 @@ const _ws = require("./ws");
 const _endpoints = /*#__PURE__*/ _interop_require_default(require("./routes/endpoints"));
 const _incidents = /*#__PURE__*/ _interop_require_default(require("./routes/incidents"));
 const _analytics = /*#__PURE__*/ _interop_require_default(require("./routes/analytics"));
-const _index = require("../../db/index");
+const _db = require("./db");
 function _interop_require_default(obj) {
     return obj && obj.__esModule ? obj : {
         default: obj
@@ -26,7 +26,7 @@ app.use(_express.default.json());
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/health', async (_req, res)=>{
     try {
-        await _index.pool.query('SELECT 1');
+        await _db.pool.query('SELECT 1');
         res.json({
             status: 'ok',
             db: 'connected',
